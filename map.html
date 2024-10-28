@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-Time GPS Tracker</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  <style>
+    #map { height: 500px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h3>GPS Tracker Map</h3>
+  <div id="map"></div>
+
+  <script>
+    // Initialize the map
+    function initMap(latitude = 37.7749, longitude = -122.4194) {
+      const mapOptions = {
+        zoom: 15,
+        center: { lat: latitude, lng: longitude }
+      };
+      const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+      // Add a marker to the map
+      const marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+        title: "Current Location"
+      });
+
+      // Update marker position every few seconds (replace with actual server call)
+      setInterval(() => {
+        fetch('http://localhost:3000/latest-location')
+          .then(response => response.json())
+          .then(data => {
+            const newLat = parseFloat(data.latitude);
+            const newLng = parseFloat(data.longitude);
+
+            const newPosition = { lat: newLat, lng: newLng };
+            marker.setPosition(newPosition);
+            map.panTo(newPosition);
+          });
+      }, 5000);
+    }
+
+    // Load the map when the page loads
+    window.onload = () => initMap();
+  </script>
+</body>
+</html>
